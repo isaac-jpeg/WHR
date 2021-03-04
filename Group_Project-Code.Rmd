@@ -1,0 +1,321 @@
+---
+title: "World Happiness Data Analysis"
+author: Mario Castro, Isaac Nicolaus Braganza, Gaby Gonzalez, Claudio Rodriguez, Xiaoguang
+  Liang, and Riya Luthra
+date: "12/13/2019"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r}
+#Begin by loading the necessary packages for the project and read in the dataset
+library(ggplot2)
+library(dplyr)
+#This is the line used to read the whr_alternate data set
+#whr_alternate=read.csv("/Users/mariocastro/Downloads/whr_alternate.csv")
+
+#The following steps create two different subsets of the original datset by year
+whr_alternate_2017= data.frame(filter(whr_alternate, Year == 2017 ))
+whr_alternate_2018= data.frame(filter(whr_alternate, Year == 2018 ))
+```
+```{r}
+#This is for 2017
+whr_alternate_2017$Continent= NA
+whr_alternate_2017$Continent[which(whr_alternate_2017$Country %in% c("Israel", "United Arab Emirates", "Singapore","Thailand","Taiwan Province of China","Qatar", "Saudi Arabia", "Kuwait", "Bahrain", "Malaysia", "Uzbekistan", "Japan", "South Korea", "Turkmenistan", "Kazakhstan", "Turkey", "Hong Kong S.A.R., China", "Philippines", "Jordan", "China", "Pakistan", "Indonesia", "Azerbaijan", "Lebanon", "Vietnam", "Tajikistan", "Bhutan", "Kyrgyzstan", "Nepal", "Mongolia", "Palestinian Territories", "Iran", "Bangladesh", "Myanmar", "Iraq", "Sri Lanka", "Armenia", "India", "Georgia","Cambodia", "Afghanistan", "Yemen", "Syria"))] = "Asia"
+
+whr_alternate_2017$Continent[which(whr_alternate_2017$Country %in% c("Norway", "Denmark", "Iceland", "Switzerland", "Finland","Netherlands", "Sweden", "Austria", "Ireland", "Germany","Belgium", "Luxembourg", "United Kingdom", "Czech Republic","Malta", "France", "Spain", "Slovakia", "Poland", "Italy","Russia", "Lithuania", "Latvia", "Moldova", "Romania","Slovenia", "North Cyprus", "Cyprus", "Estonia", "Belarus","Serbia", "Hungary", "Croatia", "Kosovo", "Montenegro","Greece", "Portugal", "Bosnia and Herzegovina", "Macedonia","Bulgaria", "Albania", "Ukraine"))] = "Europe"
+
+whr_alternate_2017$Continent[which(whr_alternate_2017$Country %in% c("Canada", "Costa Rica", "United States", "Mexico","Panama","Trinidad and Tobago", "El Salvador", "Belize", "Guatemala","Jamaica", "Nicaragua", "Dominican Republic", "Honduras","Haiti"))] = "North America"
+
+whr_alternate_2017$Continent[which(whr_alternate_2017$Country %in% c("Chile", "Brazil", "Argentina", "Uruguay","Colombia", "Ecuador", "Bolivia", "Peru","Paraguay", "Venezuela"))] = "South America"
+
+whr_alternate_2017$Continent[which(whr_alternate_2017$Country %in% c("New Zealand", "Australia"))] = "Australia"
+
+whr_alternate_2017$Continent[which(whr_alternate_2017$Country %in% c("Algeria", "Benin", "Botswana", "Burkina Faso", "Cameroon","Central African Republic", "Chad", "Congo (Brazzaville)", "Congo (Kinshasa)", "Egypt", "Ethiopia", "Gabon", "Gambia","Ghana", "Guinea", "Hong Kong S.A.R. of China", "Ivory Coast", "Kenya", "Laos", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius","Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Senegal", "Sierra Leone","South Africa", "South Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"))] = "Africa"
+
+#This is for the 2018 dataset
+whr_alternate_2018$Continent= NA
+whr_alternate_2018$Continent[which(whr_alternate_2018$Country %in% c("Israel", "United Arab Emirates", "Singapore", "Thailand", "Taiwan Province of China","Qatar", "Saudi Arabia", "Kuwait", "Bahrain", "Malaysia", "Uzbekistan", "Japan", "South Korea", "Turkmenistan", "Kazakhstan", "Turkey", "Hong Kong S.A.R., China", "Philippines","Jordan", "China", "Pakistan", "Indonesia", "Azerbaijan", "Lebanon", "Vietnam","Tajikistan", "Bhutan", "Kyrgyzstan", "Nepal", "Mongolia", "Palestinian Territories","Iran", "Bangladesh", "Myanmar", "Iraq", "Sri Lanka", "Armenia", "India", "Georgia","Cambodia", "Afghanistan", "Yemen", "Syria"))] = "Asia"
+
+whr_alternate_2018$Continent[which(whr_alternate_2018$Country %in% c("Norway", "Denmark", "Iceland", "Switzerland", "Finland","Netherlands", "Sweden", "Austria", "Ireland", "Germany","Belgium", "Luxembourg", "United Kingdom", "Czech Republic","Malta", "France", "Spain", "Slovakia", "Poland", "Italy","Russia", "Lithuania", "Latvia", "Moldova", "Romania","Slovenia", "North Cyprus", "Cyprus", "Estonia", "Belarus","Serbia", "Hungary", "Croatia", "Kosovo", "Montenegro","Greece", "Portugal", "Bosnia and Herzegovina", "Macedonia","Bulgaria", "Albania", "Ukraine"))] = "Europe"
+
+whr_alternate_2018$Continent[which(whr_alternate_2018$Country %in% c("Canada", "Costa Rica", "United States", "Mexico", "Panama","Trinidad and Tobago", "El Salvador", "Belize", "Guatemala","Jamaica", "Nicaragua", "Dominican Republic", "Honduras","Haiti"))] = "North America"
+
+whr_alternate_2018$Continent[which(whr_alternate_2018$Country %in% c("Chile", "Brazil", "Argentina", "Uruguay","Colombia", "Ecuador", "Bolivia", "Peru","Paraguay", "Venezuela"))] = "South America"
+
+whr_alternate_2018$Continent[which(whr_alternate_2018$Country %in% c("New Zealand", "Australia"))] = "Australia"
+
+whr_alternate_2018$Continent[which(whr_alternate_2018$Country %in% c("Algeria", "Benin", "Botswana", "Burkina Faso", "Cameroon", "Central African Republic", "Chad", "Congo (Brazzaville)", "Congo (Kinshasa)", "Egypt", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Hong Kong S.A.R. of China", "Ivory Coast", "Kenya", "Laos","Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius","Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Senegal", "Sierra Leone","South Africa", "South Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe","Burundi", "Comoros", "Swaziland"))] = "Africa"
+```
+
+```{r, dpi=300}
+#These are the averages for each seperate continent for year 2017
+Africa2017= mean(filter(whr_alternate_2017, Continent == "Africa")$Life.Ladder)
+Asia2017= mean(filter(whr_alternate_2017, Continent == "Asia")$Life.Ladder)
+Australia2017= mean(filter(whr_alternate_2017, Continent == "Australia")$Life.Ladder)
+Europe2017= mean(filter(whr_alternate_2017, Continent == "Europe")$Life.Ladder)
+North_America2017= mean(filter(whr_alternate_2017, Continent == "North America")$Life.Ladder)
+South_America2017= mean(filter(whr_alternate_2017, Continent == "South America")$Life.Ladder)
+#This creates a vector of those calculated averages
+x2017=c(Africa2017, Asia2017, Australia2017, Europe2017, North_America2017, South_America2017)
+#this now turns that vector into a dataframe
+avg2017=data.frame(x2017)
+#Now we add another column to the newly created data frame with each continent's name
+continents_avg.Ladder2017=mutate(avg2017, Continents = c("Africa", "Asia", "Australia", "Europe", "North America", "South America"))
+#Now we create a bar graph for that data
+g1=ggplot(continents_avg.Ladder2017,aes(x= Continents,y=x2017))+
+  geom_bar(stat="identity", fill="deepskyblue", show.legend=FALSE, colour="black") +
+  labs(title="Life Ladder v. Continent 2017", x="Continents", y="Life Ladder Scores")+ 
+    theme(text = element_text(size=13),
+        axis.text.x = element_text(angle=45, hjust=1))
+
+#A similar process is taken for 2018
+Africa2018= mean(filter(whr_alternate_2018, Continent == "Africa")$Life.Ladder)
+Asia2018= mean(filter(whr_alternate_2018, Continent == "Asia")$Life.Ladder)
+Australia2018= mean(filter(whr_alternate_2018, Continent == "Australia")$Life.Ladder)
+Europe2018= mean(filter(whr_alternate_2018, Continent == "Europe")$Life.Ladder)
+North_America2018= mean(filter(whr_alternate_2018, Continent == "North America")$Life.Ladder)
+South_America2018= mean(filter(whr_alternate_2018, Continent == "South America")$Life.Ladder)
+
+x2018=c(Africa2018, Asia2018, Australia2018, Europe2018, North_America2018, South_America2018)
+
+avg2018=data.frame(x2018)
+continents_avg.Ladder2018=mutate(avg2018, Continents = c("Africa", "Asia", "Australia", "Europe", "North America", "South America"))
+
+g2=ggplot(continents_avg.Ladder2018,aes(x= Continents,y=x2018),  width = 3, height = 3)+
+  geom_bar(stat="identity", fill="deepskyblue", show.legend=FALSE, colour="black") +
+  labs(title="Life Ladder v. Continent 2018", x="Continents", y="Life Ladder Scores")+
+  theme(text = element_text(size=13),
+        axis.text.x = element_text(angle=45, hjust=1))
+```
+```{r, dpi=300}
+g1
+g2
+```
+
+```{r, dpi=300}
+#Note: Only the data for 2018 will be used
+
+#These next few lines create a scatter plot with healthy life expectancy and life ladder as the two variables. I then added a regression line for all the countries plotted on the graph. This is the blue line
+life_exp2018_singreg= ggplot(whr_alternate_2018,aes(x=Healthy.life.expectancy.at.birth, y=Life.Ladder))+
+  geom_point(aes(color=Continent))+
+  labs(title = "Life Expectancy v. Life Ladder 2018: Single Regression Line", subtitle = "r=0.744",
+       x = "Life Expectancy", 
+       y = "Life Ladder Scores")+
+  geom_smooth(method="lm", se=F)+
+  theme(text = element_text(size=9),plot.title = element_text(hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+#The cor() function calculates the correlation coefficient for these two variables
+#Note: the filter function was used to elimate the "NA" from the vectors
+my_r1=cor(filter(whr_alternate_2018, Healthy.life.expectancy.at.birth != "NA")$Healthy.life.expectancy.at.birth,
+    filter(whr_alternate_2018, Healthy.life.expectancy.at.birth != "NA")$Life.Ladder)
+
+#Same scatter plot but now I added a regression line for each continent
+life_exp2018_multreg= ggplot(whr_alternate_2018,aes(x=Healthy.life.expectancy.at.birth, y=Life.Ladder, color=Continent))+
+  geom_point()+
+  labs(title = "Life Expectancy v. Life Ladder 2018: Multiple Regression Lines", subtitle = "r=0.0399 for African regression line",
+       x = "Life Expectancy", 
+       y = "Life Ladder Scores")+
+  geom_smooth(method="lm", se=F)+
+   theme(text = element_text(size=7),plot.title = element_text(hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))
+#correlation coefficient for African countries 
+my_r2=cor(filter(whr_alternate_2018, Healthy.life.expectancy.at.birth != "NA" & Continent == "Africa")$Healthy.life.expectancy.at.birth,
+    filter(whr_alternate_2018, Healthy.life.expectancy.at.birth != "NA" & Continent == "Africa")$Life.Ladder)
+```
+```{r, dpi=300, message= FALSE, warning=FALSE}
+life_exp2018_singreg
+life_exp2018_multreg
+```
+
+```{r, dpi= 300}
+#Correlation Coefficient 2018:
+GDP.per.capita_life.ladder2018 = ggplot(whr_alternate_2018,aes(x=Log.GDP.per.capita, y=Life.Ladder,color=Continent))+
+  geom_point()+
+  labs(title = "GDP per Capita v. Life Ladder 2018", 
+       x = "Log of GDP per Capita", 
+       y = "Life Ladder Scores")+
+  geom_smooth(method = "lm",se=FALSE)
+
+#Overall:
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA")$Life.Ladder)
+#Africa:
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Africa")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Africa")$Life.Ladder)
+#Europe:
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Europe")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Europe")$Life.Ladder)
+#Asia:
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Asia")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Asia")$Life.Ladder)
+#South America: 
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "South America")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "South America")$Life.Ladder)
+#North America:
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "North America")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "North America")$Life.Ladder)
+#Australia:
+cor(filter(whr_alternate_2018, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Australia")$Log.GDP.per.capita,
+    filter(whr_alternate_2018, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Australia")$Life.Ladder)
+
+#Correlation Coefficient 2017:
+GDP.per.capita_life.ladder2017 = ggplot(whr_alternate_2017,aes(x=Log.GDP.per.capita, y=Life.Ladder,color=Continent))+
+  geom_point()+
+  labs(title = "GDP per Capita v. Life Ladder 2017", 
+       x = "Log of GDP per Capita", 
+       y = "Life Ladder Scores")+
+  geom_smooth(method = "lm",se=FALSE)
+
+#Overall:
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA")$Life.Ladder)
+#Africa:
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Africa")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Africa")$Life.Ladder)
+#Europe:
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Europe")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Europe")$Life.Ladder)
+#Asia:
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Asia")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Asia")$Life.Ladder)
+#South America: 
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "South America")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "South America")$Life.Ladder)
+#North America:
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "North America")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "North America")$Life.Ladder)
+#Australia:
+cor(filter(whr_alternate_2017, Log.GDP.per.capita  & Life.Ladder != "NA" & Continent == "Australia")$Log.GDP.per.capita,
+    filter(whr_alternate_2017, Log.GDP.per.capita & Life.Ladder != "NA" & Continent == "Australia")$Life.Ladder)
+```
+```{r,dpi= 300, message= FALSE, warning=FALSE}
+GDP.per.capita_life.ladder2017
+GDP.per.capita_life.ladder2018
+```
+
+```{r, dpi=300}
+#The following lines create a scatterplot between the wealth inequality (gini) and negative affect. 
+#This is first done for the dataset for 2017, and this is a single regression line for all continents.
+inequality2017= ggplot(whr_alternate_2017,aes(x=gini.of.household.income.reported.in.Gallup..by.wp5.year, y=Negative.affect))   +geom_point(aes(color=Continent))        +geom_smooth(method = "lm", se=F)+labs(title = "Wealth Inequality v. Negative Affect", x = "Wealth Inequality (gini)", y = "Negative Affect")
+
+Euro.GinivNeg=ggplot(filter(whr_alternate_2017, Continent=="Europe"), aes(x=gini.of.household.income.reported.in.Gallup..by.wp5.year,y=Negative.affect))    +geom_point(aes(color=Continent))                                                              +geom_smooth(method = "lm",se=F)+labs(title = "Europe's regression line Gini coefficent v. Negative Affect ", x="Gini Coefficient", y= "Negative Affect score", subtitle = "r=0.1131285")
+
+Euro.Gini.R=cor(filter(whr_alternate_2017, gini.of.household.income.reported.in.Gallup..by.wp5.year!="NA"&Continent=="Europe")$gini.of.household.income.reported.in.Gallup..by.wp5.year,filter(whr_alternate_2017, gini.of.household.income.reported.in.Gallup..by.wp5.year!="NA"&Continent=="Europe")$Negative.affect )
+Euro.Gini.R
+  
+cor(filter(whr_alternate_2017, gini.of.household.income.reported.in.Gallup..by.wp5.year & Negative.affect != "NA")$gini.of.household.income.reported.in.Gallup..by.wp5.year,
+    filter(whr_alternate_2017, gini.of.household.income.reported.in.Gallup..by.wp5.year & Negative.affect != "NA")$Negative.affect)
+```
+```{r, dpi= 300,message= FALSE, warning=FALSE}
+inequality2017
+Euro.GinivNeg
+```
+
+```{r, dpi=300}
+#The following lines create a scatter plot between democratic quality and positive affect 
+#This is done for the data for 2017
+demqual2017= ggplot(whr_alternate_2017,aes(x=Democratic.Quality, y=Positive.affect))+
+  geom_point(aes(color=Continent))+
+  labs(title = "Democratic Quality v. Psoitive Affect", subtitle = "r=0.4524", 
+       x = "Democratic Quality", 
+       y = "Positive Affect")+
+  geom_smooth(method="lm", se=F)
+
+#Correlation coefficient
+cor(filter(whr_alternate_2017, Democratic.Quality & Positive.affect != "NA")$Democratic.Quality,
+    filter(whr_alternate_2017, Democratic.Quality & Positive.affect != "NA")$Positive.affect)
+```
+```{r,  dpi= 300, message= FALSE, warning=FALSE}
+demqual2017
+```
+
+```{r, dpi=300}
+Freedom_PositiveAff_2017=  ggplot(whr_alternate_2017,aes(x=Freedom.to.make.life.choices, y=Positive.affect))+
+  geom_point(aes(color=Continent))+ geom_smooth(method = "lm", se = F)+
+  labs(title = "Freedom to make life choices v. Positive affect 2017", subtitle = "r=0.6868", 
+       x = "Freedom to make life choices", 
+       y = "Positive affect")
+
+cor.2017.freedom = cor(filter(whr_alternate_2017, Freedom.to.make.life.choices & Positive.affect != "NA")$Freedom.to.make.life.choice,
+    filter(whr_alternate_2017, Freedom.to.make.life.choices & Positive.affect != "NA")$Positive.affect)
+cor.2017.freedom
+
+
+Freedom_PositiveAff_2018= ggplot(whr_alternate_2018,aes(x=Freedom.to.make.life.choices, y=Positive.affect))+
+  geom_point(aes(color=Continent))+ geom_smooth(method = "lm", se = F)+
+  labs(title = "Freedom to make life choices v. Positive affect 2018", subtitle = "r=0.6313", 
+       x = "Freedom to make life choices", 
+       y = "Positive affect")
+
+cor.2018.freedom = cor(filter(whr_alternate_2018, Freedom.to.make.life.choices & Positive.affect != "NA")$Freedom.to.make.life.choice,
+    filter(whr_alternate_2018, Freedom.to.make.life.choices & Positive.affect != "NA")$Positive.affect)
+cor.2018.freedom
+```
+```{r, dpi= 300, message= FALSE, warning=FALSE}
+Freedom_PositiveAff_2017
+Freedom_PositiveAff_2018
+```
+
+Detailed topic 1
+```{r, dpi=300}
+#These following lines create the actual scatter plot. We used the geom_smooth() function to add a regression line to the data
+socialsup2018= ggplot(whr_alternate_2018,aes(x=Social.support, y=Life.Ladder))+
+  geom_point(aes(color=Continent))+
+  labs(title = "Social Support v. Life Ladder 2018", subtitle="0.7192673",
+       x = "Social Support", 
+       y = "Life Ladder Scores")+
+  geom_smooth(method="lm", se=T)
+
+rh1=cor(filter(whr_alternate_2018, Social.support != "NA")$Social.support,filter(whr_alternate_2018, Social.support != "NA")$Life.Ladder)
+rh1
+```
+```{r, dpi= 300, message= FALSE, warning=FALSE}
+socialsup2018
+```
+```{r, dpi=300}
+#These are the following variables we will need to find the z-statistic. We begin by calculating the SD of both the variables that were plotted
+sd_support = sd(filter(whr_alternate_2018, Social.support != "NA")$Social.support)
+sd_ladder = sd(filter(whr_alternate_2018, Social.support != "NA")$Life.Ladder)
+
+#Then we calculate the slope of the regression line since this is what were testing with our Hypothesis Test.
+slope= (rh1*sd_ladder)/sd_support
+
+#The following calculation gives us the RMS error for the regression line. This value is needed to calculate the SE for the regression line which is the following line of code. The equation for SE was taken from the pdf posted on bcourses. The number 136 that is seen the denominator is the number of observation (countries) we had in our dataset for 2018
+rms= (sqrt(1-rh1^2))*sd_ladder
+SE1= rms/((sqrt(136-2))*sd_support)
+
+#Finally, we can calculate our z value which then allows us to get our p- value. With this result we find out whether or not we can reject the null
+z= (slope-0)/SE1
+z
+#This is p-value
+p=1-pnorm(z)
+p
+
+#The following code is a short we can also take in R which gives us the intercept, slope, and the p-value. We can use this to compare to our calculated values
+lm.out=lm(Life.Ladder ~ Social.support, whr_alternate_2018)
+lm.out
+summary(lm.out)
+```
+
+Detailed Topic 2
+
+```{r}
+north_count.2017= filter(whr_alternate_2017, X == 80 | X == 194 | X == 105 | X == 240 | X == 66)
+```
+```{r, dpi=300}
+graphf2=ggplot(whr_alternate_2017, aes(x=Democratic.Quality,y=..density..))+geom_histogram(binwidth =.3, fill="darkseagreen")+labs(title = "World Distribution of Democratic Quality Scores", x="Democratic Quality")  
+```
+```{r, dpi= 300, echo=FALSE, message= FALSE, warning=FALSE}
+graphf2
+```
+
+```{r}
+# Establishing Averages
+ave.north.demQ=mean(north_count.2017$Democratic.Quality)
+ave.world.demQ=mean(filter(whr_alternate_2017,Democratic.Quality!="NA")$Democratic.Quality)
+# Finding SE, while also including SDplus
+mysd=function(x){sd(x)*sqrt((length(x)-1)/length(x))}
+SE=(mysd(north_count.2017$Democratic.Quality)*sqrt(5/4)*sqrt(5))/5
+# T-score calculation
+((ave.north.demQ-ave.world.demQ))/SE
+```
